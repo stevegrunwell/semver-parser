@@ -1,0 +1,23 @@
+language: php
+
+php:
+  - 7.1
+  - 7.2
+  - 7.3
+  - nightly
+
+sudo: false
+
+env:
+  matrix:
+    - PREFER_LOWEST="--prefer-lowest --prefer-stable"
+    - PREFER_LOWEST=""
+
+install:
+  - composer update --no-interaction --prefer-dist $PREFER_LOWEST
+
+script:
+  - composer test
+
+notifications:
+  email: false
