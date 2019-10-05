@@ -29,6 +29,18 @@
             "Tests\\": "tests/"
         }
     },
+    "scripts": {
+        "test": [
+            "./vendor/bin/phpunit --testdox --colors=always"
+        ],
+        "test-coverage": [
+            "phpdbg -qrr -d memory_limit=-1 ./vendor/bin/phpunit --coverage-html=tests/coverage"
+        ]
+    },
+    "scripts-descriptions": {
+        "test": "Run all tests.",
+        "test-coverage": "Generate code coverage reports in tests/coverage."
+    },
     "config": {
         "preferred-install": "dist",
         "sort-packages": true,
