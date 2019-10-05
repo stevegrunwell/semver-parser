@@ -1,0 +1,154 @@
+<?php
+
+namespace Tests;
+
+use PHPUnit\Framework\TestCase;
+use SteveGrunwell\SemVer\Version;
+
+/**
+ * @covers \SteveGrunwell\SemVer\Version
+ */
+class VersionText extends TestCase
+{
+    /**
+     * @test
+     * @group Getters
+     * @covers \SteveGrunwell\SemVer\Version::__toString
+     */
+    public function casting_to_a_string_should_implode_values()
+    {
+        $version = new Version;
+        $version->setMajorVersion(1);
+        $version->setMinorVersion(2);
+        $version->setPatchVersion(3);
+
+        $this->assertSame('1.2.3', (string) $version);
+    }
+
+    /**
+     * @test
+     * @group Getters
+     * @covers \SteveGrunwell\SemVer\Version::getVersion
+     */
+    public function getVersion_should_retrieve_the_collapsed_string()
+    {
+        $version = new Version;
+        $version->setMajorVersion(1);
+        $version->setMinorVersion(2);
+        $version->setPatchVersion(3);
+
+        $this->assertSame('1.2.3', $version->getVersion());
+    }
+
+
+    /**
+     * @test
+     * @group Getters
+     * @covers \SteveGrunwell\SemVer\Version::getMajorVersion
+     */
+    public function getMajorVersion_should_return_the_major_version()
+    {
+        $version = new Version('1.2.3');
+
+        $this->assertSame(1, $version->getMajorVersion());
+    }
+
+    /**
+     * @test
+     * @group Getters
+     * @covers \SteveGrunwell\SemVer\Version::getMajorVersion
+     */
+    public function getMajorVersion_should_default_to_zero()
+    {
+        $version = new Version;
+
+        $this->assertSame(0, $version->getMajorVersion());
+    }
+
+    /**
+     * @test
+     * @group Getters
+     * @covers \SteveGrunwell\SemVer\Version::getMinorVersion
+     */
+    public function getMinorVersion_should_return_the_minor_version()
+    {
+        $version = new Version('1.2.3');
+
+        $this->assertSame(2, $version->getMinorVersion());
+    }
+
+    /**
+     * @test
+     * @group Getters
+     * @covers \SteveGrunwell\SemVer\Version::getMinorVersion
+     */
+    public function getMinorVersion_should_default_to_zero()
+    {
+        $version = new Version;
+
+        $this->assertSame(0, $version->getMinorVersion());
+    }
+
+    /**
+     * @test
+     * @group Getters
+     * @covers \SteveGrunwell\SemVer\Version::getPatchVersion
+     */
+    public function getPatchVersion_should_return_the_patch_version()
+    {
+        $version = new Version('1.2.3');
+
+        $this->assertSame(3, $version->getPatchVersion());
+    }
+
+    /**
+     * @test
+     * @group Getters
+     * @covers \SteveGrunwell\SemVer\Version::getPatchVersion
+     */
+    public function getPatchVersion_should_default_to_zero()
+    {
+        $version = new Version;
+
+        $this->assertSame(0, $version->getPatchVersion());
+    }
+
+    /**
+     * @test
+     * @group Setters
+     * @covers \SteveGrunwell\SemVer\Version::setMajorVersion
+     */
+    public function setMajorVersion_changes_the_major_version()
+    {
+        $version = new Version('1.2.3');
+        $version->setMajorVersion(2);
+
+        $this->assertSame('2.2.3', $version->getVersion());
+    }
+
+    /**
+     * @test
+     * @group Setters
+     * @covers \SteveGrunwell\SemVer\Version::setMinorVersion
+     */
+    public function setMinorVersion_changes_the_minor_version()
+    {
+        $version = new Version('1.2.3');
+        $version->setMinorVersion(3);
+
+        $this->assertSame('1.3.3', $version->getVersion());
+    }
+
+    /**
+     * @test
+     * @group Setters
+     * @covers \SteveGrunwell\SemVer\Version::setPatchVersion
+     */
+    public function setPatchVersion_changes_the_patch_version()
+    {
+        $version = new Version('1.2.3');
+        $version->setPatchVersion(4);
+
+        $this->assertSame('1.2.4', $version->getVersion());
+    }
+}

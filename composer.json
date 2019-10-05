@@ -1,0 +1,40 @@
+{
+    "name": "stevegrunwell/semver-parser",
+    "description": "Library for parsing and manipulating Semantic Versioning (\"SemVer\") relases",
+    "keywords": ["semver", "semantic", "versioning"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Steve Grunwell",
+            "homepage": "https://stevegrunwell.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/stevegrunwell/semver-parser/issues",
+        "source": "https://github.com/stevegrunwell/semver-parser/"
+    },
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "SteveGrunwell\\SemVer\\": "src/"
+        }
+    },
+    "require-dev": {
+        "php": "^7.0",
+        "phpunit/phpunit": "^8.4"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "optimize-autoloader": true,
+        "platform": {
+            "php": "7.3"
+        }
+    }
+}
