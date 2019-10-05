@@ -16,7 +16,7 @@ class VersionText extends TestCase
      * @group Getters
      * @covers \SteveGrunwell\SemVer\Version::__toString
      */
-    public function casting_to_a_string_should_implode_values()
+    public function casting_to_a_string_should_call_getVersion()
     {
         $version = new Version;
         $version->setMajorVersion(1);
@@ -41,7 +41,6 @@ class VersionText extends TestCase
         $this->assertSame('1.2.3', $version->getVersion());
     }
 
-
     /**
      * @test
      * @group Getters
@@ -52,18 +51,6 @@ class VersionText extends TestCase
         $version = new Version('1.2.3');
 
         $this->assertSame(1, $version->getMajorVersion());
-    }
-
-    /**
-     * @test
-     * @group Getters
-     * @covers \SteveGrunwell\SemVer\Version::getMajorVersion
-     */
-    public function getMajorVersion_should_default_to_zero()
-    {
-        $version = new Version;
-
-        $this->assertSame(0, $version->getMajorVersion());
     }
 
     /**
@@ -81,18 +68,6 @@ class VersionText extends TestCase
     /**
      * @test
      * @group Getters
-     * @covers \SteveGrunwell\SemVer\Version::getMinorVersion
-     */
-    public function getMinorVersion_should_default_to_zero()
-    {
-        $version = new Version;
-
-        $this->assertSame(0, $version->getMinorVersion());
-    }
-
-    /**
-     * @test
-     * @group Getters
      * @covers \SteveGrunwell\SemVer\Version::getPatchVersion
      */
     public function getPatchVersion_should_return_the_patch_version()
@@ -104,14 +79,12 @@ class VersionText extends TestCase
 
     /**
      * @test
+     * @dataProvider provide_version_getters
      * @group Getters
-     * @covers \SteveGrunwell\SemVer\Version::getPatchVersion
      */
-    public function getPatchVersion_should_default_to_zero()
+    public function getters_should_default_to_zero(string $method)
     {
-        $version = new Version;
-
-        $this->assertSame(0, $version->getPatchVersion());
+        $this->assertSame(0, (new Version)->{$method}());
     }
 
     /**
