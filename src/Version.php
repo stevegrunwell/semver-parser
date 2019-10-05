@@ -163,8 +163,8 @@ class Version
      *
      * @throws \SteveGrunwell\SemVer\Exceptions\InvalidVersionException If $value is < 0.
      *
-     * @param string $digit   One of "major", "minor", or "patch".
-     * @param int    $default The default value if one cannot be parsed.
+     * @param string $digit One of "major", "minor", or "patch".
+     * @param int    $value The value of digit.
      */
     protected function setVersionDigit(string $digit, int $value): self
     {
