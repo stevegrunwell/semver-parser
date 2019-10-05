@@ -79,12 +79,12 @@ class VersionText extends TestCase
 
     /**
      * @test
-     * @dataProvider provide_version_getters
+     * @dataProvider provide_version_getters_and_setters
      * @group Getters
      */
-    public function getters_should_default_to_zero(string $method)
+    public function getters_should_default_to_zero(string $getter)
     {
-        $this->assertSame(0, (new Version)->{$method}());
+        $this->assertSame(0, (new Version)->{$getter}());
     }
 
     /**
@@ -129,38 +129,103 @@ class VersionText extends TestCase
     /**
      * @test
      * @testdox Setters should not accept non-negative values
-     * @dataProvider provide_version_setters()
+     * @dataProvider provide_version_getters_and_setters()
      * @group Setters
      */
-    public function setters_should_not_accept_non_negative_values(string $method)
+    public function setters_should_not_accept_non_negative_values(string $getter, string $setter)
     {
         $this->expectException(InvalidVersionException::class);
 
         $version = new Version;
-        $version->{$method}(-2);
+        $version->{$setter}(-2);
+    }
+
+    /**
+     * @test
+     * @group Setters
+     * @dataProvider provide_version_getters_and_setters()
+     */
+    public function values_can_be_incremented(string $getter, string $setter)
+    {
+        $version = new Version;
+        $method  = 'increment' . substr($setter, 3);
+        $version->{$setter}(1);
+        $version->{$method}();
+
+        $this->assertSame(2, $version->{$getter}());
+    }
+
+    /**
+     * @test
+     * @group Setters
+     * @covers \SteveGrunwell\SemVer\Version::incrementMajorVersion()
+     * @link https://semver.org/spec/v2.0.0.html#spec-item-8
+     */
+    public function incrementMajorVersion_should_reset_minor_and_patch_versions_to_zero()
+    {
+        $version = new Version('1.2.3');
+
+        $version->incrementMajorVersion();
+
+        $this->assertSame(0, $version->getMinorVersion());
+        $this->assertSame(0, $version->getPatchVersion());
+    }
+
+    /**
+     * @test
+     * @group Setters
+     * @covers \SteveGrunwell\SemVer\Version::incrementMajorVersion()
+     * @link https://semver.org/spec/v2.0.0.html#spec-item-7
+     */
+    public function incrementMinorVersion_should_reset_patch_versions_to_zero()
+    {
+        $version = new Version('1.2.3');
+
+        $version->incrementMajorVersion();
+
+        $this->assertSame(0, $version->getPatchVersion());
+    }
+
+    /**
+     * @test
+     * @group Setters
+     * @dataProvider provide_version_getters_and_setters()
+     */
+    public function values_can_be_decremented(string $getter, string $setter)
+    {
+        $version = new Version;
+        $method  = 'decrement' . substr($setter, 3);
+        $version->{$setter}(2);
+        $version->{$method}();
+
+        $this->assertSame(1, $version->{$getter}());
+    }
+
+    /**
+     * @test
+     * @group Setters
+     * @dataProvider provide_version_getters_and_setters()
+     */
+    public function values_cannot_be_decremented_below_zero(string $getter, string $setter)
+    {
+        $version = new Version;
+        $method  = 'decrement' . substr($setter, 3);
+        $version->{$setter}(0);
+
+        $this->expectException(InvalidVersionException::class);
+
+        $version->{$method}();
     }
 
     /**
      * Return all of the available version setter methods.
      */
-    public function provide_version_getters(): array
+    public function provide_version_getters_and_setters(): array
     {
         return [
-            'Major' => ['getMajorVersion'],
-            'Minor' => ['getMinorVersion'],
-            'Patch' => ['getPatchVersion'],
-        ];
-    }
-
-    /**
-     * Return all of the available version setter methods.
-     */
-    public function provide_version_setters(): array
-    {
-        return [
-            'Major' => ['setMajorVersion'],
-            'Minor' => ['setMinorVersion'],
-            'Patch' => ['setPatchVersion'],
+            'Major' => ['getMajorVersion', 'setMajorVersion'],
+            'Minor' => ['getMinorVersion', 'setMinorVersion'],
+            'Patch' => ['getPatchVersion', 'setPatchVersion'],
         ];
     }
 }

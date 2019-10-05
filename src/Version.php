@@ -106,6 +106,59 @@ class Version
     }
 
     /**
+     * Increment the major version by one.
+     */
+    public function incrementMajorVersion(): self
+    {
+        $this->setVersionDigit('major', $this->getMajorVersion() + 1);
+        $this->setVersionDigit('minor', 0);
+
+        return $this->setVersionDigit('patch', 0);
+    }
+
+    /**
+     * Increment the minor version by one.
+     */
+    public function incrementMinorVersion(): self
+    {
+        $this->setVersionDigit('minor', $this->getMinorVersion() + 1);
+
+        return $this->setVersionDigit('patch', 0);
+    }
+
+    /**
+     * Increment the patch version by one.
+     */
+    public function incrementPatchVersion(): self
+    {
+        return $this->setVersionDigit('patch', $this->getPatchVersion() + 1);
+    }
+
+    /**
+     * Decrement the major version by one.
+     */
+    public function decrementMajorVersion(): self
+    {
+        return $this->setVersionDigit('major', $this->getMajorVersion() - 1);
+    }
+
+    /**
+     * Decrement the minor version by one.
+     */
+    public function decrementMinorVersion(): self
+    {
+        return $this->setVersionDigit('minor', $this->getMinorVersion() - 1);
+    }
+
+    /**
+     * Decrement the patch version by one.
+     */
+    public function decrementPatchVersion(): self
+    {
+        return $this->setVersionDigit('patch', $this->getPatchVersion() - 1);
+    }
+
+    /**
      * Set the given digit.
      *
      * @throws \SteveGrunwell\SemVer\Exceptions\InvalidVersionException If $value is < 0.
