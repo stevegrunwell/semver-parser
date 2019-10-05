@@ -2,6 +2,8 @@
 
 namespace SteveGrunwell\SemVer;
 
+use SteveGrunwell\SemVer\Exceptions\InvalidVersionException;
+
 class Version
 {
     /**
@@ -84,9 +86,7 @@ class Version
      */
     public function setMajorVersion(int $value): self
     {
-        $this->parseVersion()->major = $value;
-
-        return $this;
+        return $this->setVersionDigit('major', $value);
     }
 
     /**
@@ -94,9 +94,7 @@ class Version
      */
     public function setMinorVersion(int $value): self
     {
-        $this->parseVersion()->minor = $value;
-
-        return $this;
+        return $this->setVersionDigit('minor', $value);
     }
 
     /**
@@ -104,7 +102,24 @@ class Version
      */
     public function setPatchVersion(int $value): self
     {
-        $this->parseVersion()->patch = $value;
+        return $this->setVersionDigit('patch', $value);
+    }
+
+    /**
+     * Set the given digit.
+     *
+     * @throws \SteveGrunwell\SemVer\Exceptions\InvalidVersionException If $value is < 0.
+     *
+     * @param string $digit   One of "major", "minor", or "patch".
+     * @param int    $default The default value if one cannot be parsed.
+     */
+    protected function setVersionDigit(string $digit, int $value): self
+    {
+        if (0 > $value) {
+            throw new InvalidVersionException('Digits must be non-negative integers.');
+        }
+
+        $this->parseVersion()->{$digit} = $value;
 
         return $this;
     }

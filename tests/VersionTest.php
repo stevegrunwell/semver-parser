@@ -3,6 +3,7 @@
 namespace Tests;
 
 use PHPUnit\Framework\TestCase;
+use SteveGrunwell\SemVer\Exceptions\InvalidVersionException;
 use SteveGrunwell\SemVer\Version;
 
 /**
@@ -150,5 +151,43 @@ class VersionText extends TestCase
         $version->setPatchVersion(4);
 
         $this->assertSame('1.2.4', $version->getVersion());
+    }
+
+    /**
+     * @test
+     * @testdox Setters should not accept non-negative values
+     * @dataProvider provide_version_setters()
+     * @group Setters
+     */
+    public function setters_should_not_accept_non_negative_values(string $method)
+    {
+        $this->expectException(InvalidVersionException::class);
+
+        $version = new Version;
+        $version->{$method}(-2);
+    }
+
+    /**
+     * Return all of the available version setter methods.
+     */
+    public function provide_version_getters(): array
+    {
+        return [
+            'Major' => ['getMajorVersion'],
+            'Minor' => ['getMinorVersion'],
+            'Patch' => ['getPatchVersion'],
+        ];
+    }
+
+    /**
+     * Return all of the available version setter methods.
+     */
+    public function provide_version_setters(): array
+    {
+        return [
+            'Major' => ['setMajorVersion'],
+            'Minor' => ['setMinorVersion'],
+            'Patch' => ['setPatchVersion'],
+        ];
     }
 }
