@@ -1,5 +1,7 @@
 ## SemVer Parser
 
+[![Build Status](https://travis-ci.com/stevegrunwell/semver-parser.svg?branch=develop)](https://travis-ci.com/stevegrunwell/semver-parser)
+
 This library defines the `SteveGrunwell\SemVer\Version` class, which is meant to parse and manipulate version numbers based on [the rules of Semantic Versioning (a.k.a. "SemVer")](https://semver.org/).
 
 ## Installation
