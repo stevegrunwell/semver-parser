@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<ruleset name="SemVer-Parser">
+    <description>Rules for the stevegrunwell/semver-parser library</description>
+    <arg name="colors"/>
+    <arg value="sp"/>
+    <arg name="extensions" value="php"/>
+
+    <file>src</file>
+    <file>tests</file>
+
+    <exclude-pattern>tests/coverage/*</exclude-pattern>
+
+    <!-- Allow snake_case in test methods. -->
+    <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR2"/>
+</ruleset>
