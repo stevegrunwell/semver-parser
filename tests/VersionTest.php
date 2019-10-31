@@ -293,8 +293,13 @@ class VersionText extends TestCase
      * @test
      * @dataProvider provide_control_versions()
      */
-    public function all_examples_from_the_specification_should_pass(string $version, int $major, int $minor, int $patch, string $prerelease)
-    {
+    public function all_examples_from_the_specification_should_pass(
+        string $version,
+        int $major,
+        int $minor,
+        int $patch,
+        string $prerelease
+    ) {
         $version = new Version($version);
 
         $this->assertSame($major, $version->getMajorVersion());
