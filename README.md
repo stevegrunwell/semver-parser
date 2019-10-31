@@ -22,21 +22,23 @@ use SteveGrunwell\SemVer\Parser;
 // Import the Composer-generated autoloader.
 require_once __DIR__ . '/vendor/autoload.php';
 
-$version = new Version('1.2.3');
+$version = new Version('1.2.3-rc1');
 
 // Parse the version.
-$version->getMajorVersion(); // 1
-$version->getMinorVersion(); // 2
-$version->getPatchVersion(); // 3
+$version->getMajorVersion();      // 1
+$version->getMinorVersion();      // 2
+$version->getPatchVersion();      // 3
+$version->getPreReleaseVersion(); // rc1
 
 // Modify the version.
 $version->setMajorVersion(4);
 $version->setMinorVersion(5);
 $version->setPatchVersion(6);
+$version->setPreReleaseVersion('rc2');
 
 // Retrieve the updated version as a string.
-$version->getVersion(); // "4.5.6"
-(string) $version;      // "4.5.6"
+$version->getVersion(); // "4.5.6-rc2"
+(string) $version;      // "4.5.6-rc2"
 ```
 
 ### Additional methods
