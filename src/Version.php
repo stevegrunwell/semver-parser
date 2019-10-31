@@ -22,6 +22,11 @@ class Version
     protected $patch;
 
     /**
+     * @var string The pre-release version.
+     */
+    protected $preRelease;
+
+    /**
      * @var string The original version string that was provided.
      */
     protected $version;
@@ -49,12 +54,19 @@ class Version
      */
     public function getVersion(): string
     {
-        return sprintf(
+        $version = sprintf(
             '%1$d.%2$d.%3$d',
             $this->getMajorVersion(),
             $this->getMinorVersion(),
             $this->getPatchVersion()
         );
+
+        // Append the pre-release, if available.
+        if ($this->preRelease) {
+            $version .= '-' . $this->preRelease;
+        }
+
+        return $version;
     }
 
     /**
@@ -82,6 +94,14 @@ class Version
     }
 
     /**
+     * Get the pre-release version.
+     */
+    public function getPreReleaseVersion(): string
+    {
+        return $this->parseVersion()->preRelease;
+    }
+
+    /**
      * Set the major version.
      */
     public function setMajorVersion(int $value): self
@@ -103,6 +123,16 @@ class Version
     public function setPatchVersion(int $value): self
     {
         return $this->setVersionDigit('patch', $value);
+    }
+
+    /**
+     * Set the patch version.
+     */
+    public function setPreReleaseVersion(string $value): self
+    {
+        $this->parseVersion()->preRelease = $this->validateIdentifier($value);
+
+        return $this;
     }
 
     /**
@@ -183,16 +213,45 @@ class Version
     protected function parseVersion(): self
     {
         // If these are all null, we have yet to parse.
-        if (isset($this->major, $this->minor, $this->patch)) {
+        if (isset($this->major, $this->minor, $this->patch, $this->preRelease)) {
             return $this;
         }
 
-        $values = explode('.', $this->version, 3);
+        // If we have a pre-release, split that off.
+        $multipleParts = explode('-', $this->version, 2);
+
+        if (2 === count($multipleParts)) {
+            list($version, $strings) = $multipleParts;
+        } else {
+            $version = $this->version;
+        }
+
+        $values = explode('.', $version, 3);
         $values = array_map('intval', $values);
 
         // Ensure we have three entries, map them to major, minor, and patch.
         list($this->major, $this->minor, $this->patch) = array_pad($values, 3, 0);
 
+        // Handle pre-release versions, if available.
+        $this->preRelease = ! empty($strings) ? $this->validateIdentifier($strings) : '';
+
         return $this;
+    }
+
+    /**
+     * Validate permitted characters for pre-release versions.
+     *
+     * @link https://semver.org/spec/v2.0.0.html#spec-item-9
+     *
+     * @throws \SteveGrunwell\SemVer\Exceptions\InvalidVersionException If any illegal characters
+     *         are found.
+     */
+    protected function validateIdentifier(string $identifier)
+    {
+        if (preg_match('/[^A-Za-z0-9-\.]/', $identifier)) {
+            throw new InvalidVersionException('Identifiers may only contain ASCII alphanumerics, dots, and hyphens.');
+        }
+
+        return $identifier;
     }
 }
