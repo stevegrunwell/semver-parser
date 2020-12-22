@@ -9,7 +9,7 @@ use SteveGrunwell\SemVer\Version;
 /**
  * @covers \SteveGrunwell\SemVer\Version
  */
-class VersionText extends TestCase
+class VersionTest extends TestCase
 {
     /**
      * @test
