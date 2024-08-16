@@ -1,35 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SteveGrunwell\SemVer;
 
 use SteveGrunwell\SemVer\Exceptions\InvalidVersionException;
 
+/**
+ * Represents a semantic version number.
+ */
 class Version
 {
     /**
      * @var int The major version.
      */
-    protected $major;
+    protected int $major;
 
     /**
      * @var int The minor version.
      */
-    protected $minor;
+    protected int $minor;
 
     /**
      * @var int The patch version.
      */
-    protected $patch;
+    protected int $patch;
 
     /**
      * @var string The pre-release version.
      */
-    protected $preRelease;
+    protected string $preRelease;
 
     /**
      * @var string The original version string that was provided.
      */
-    protected $version;
+    protected string $version;
 
     /**
      * Create the version.
@@ -50,7 +55,7 @@ class Version
     }
 
     /**
-     * Retrieve the string-ified version.
+     * Retrieve the string-ified version in major.minor.patch format.
      */
     public function getVersion(): string
     {
@@ -233,7 +238,7 @@ class Version
         list($this->major, $this->minor, $this->patch) = array_pad($values, 3, 0);
 
         // Handle pre-release versions, if available.
-        $this->preRelease = ! empty($strings) ? $this->validateIdentifier($strings) : '';
+        $this->preRelease = !empty($strings) ? $this->validateIdentifier($strings) : '';
 
         return $this;
     }
@@ -246,7 +251,7 @@ class Version
      * @throws \SteveGrunwell\SemVer\Exceptions\InvalidVersionException If any illegal characters
      *         are found.
      */
-    protected function validateIdentifier(string $identifier)
+    protected function validateIdentifier(string $identifier): string
     {
         if (preg_match('/[^A-Za-z0-9-\.]/', $identifier)) {
             throw new InvalidVersionException('Identifiers may only contain ASCII alphanumerics, dots, and hyphens.');
