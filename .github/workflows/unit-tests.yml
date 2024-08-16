@@ -1,0 +1,29 @@
+name: Unit Tests
+
+on: [pull_request]
+
+jobs:
+  phpunit:
+    name: PHP ${{ matrix.php-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['8.2', '8.3']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: none
+
+      - name: Remove PHPStan as a dependency
+        run: composer remove --dev phpstan/phpstan
+
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@v2
+
+      - name: Run test suite
+        run: make unit-tests

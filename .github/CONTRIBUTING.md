@@ -9,25 +9,25 @@ Begin by cloning the GitHub repo locally and installing the dependencies with [C
 
 ```sh
 # Clone the repository + change into the directory
-$ git clone https://github.com/stevegrunwell/semver-parser.git \
+git clone https://github.com/stevegrunwell/semver-parser.git \
     && cd semver-parser
 
 # Install local dependencies
-$ composer install
+make
 ```
 
 ### Branching
 
-Pull requests should be based off the `develop` branch, which represents the current development state of the library. The only thing ever merged into `master` should be new release branches, at the time a release is tagged.
+Pull requests should be based off the `develop` branch, which represents the current development state of the library. The only thing ever merged into `main` should be new release branches, at the time a release is tagged.
 
 To create a new feature branch:
 
-```bash
+```sh
 # Start on develop, making sure it's up-to-date
-$ git checkout develop && git pull
+git checkout develop && git pull
 
 # Create a new branch for your feature
-$ git checkout -b feature/my-cool-new-feature
+git checkout -b feature/my-cool-new-feature
 ```
 
 When submitting a new pull request, your `feature/my-cool-new-feature` should be compared against `develop`.
@@ -35,21 +35,34 @@ When submitting a new pull request, your `feature/my-cool-new-feature` should be
 
 ### Coding standards
 
-This project uses [the PSR-2 coding standards](http://www.php-fig.org/psr/psr-2/).
+This project uses [the PSR-12 coding standards](http://www.php-fig.org/psr/psr-12/).
 
+These may be checked at any time by running [PHP_CodeSniffer](https://packagist.org/packages/squizlabs/php_codesniffer):
+
+```sh
+make standards
+```
 
 ### Running unit tests
 
 [PHPUnit](https://phpunit.de/) is included as a development dependency, and should be run regularly. When submitting changes, please be sure to add or update unit tests accordingly. You may run unit tests at any time by running:
 
-```bash
-$ ./vendor/bin/phpunit
+```sh
+make unit-tests
 ```
 
 #### Code coverage
 
 To generate a report of code coverage for the current branch, you may run the following Composer script, which will generate an HTML report in `tests/coverage/`:
 
-```bash
-$ composer test-coverage
+```sh
+make test-coverage
+```
+
+### Static code analysis
+
+This repo is also pre-configured with [PHPStan](https://phpstan.org) for static code analysis:
+
+```sh
+make static-analysis
 ```
