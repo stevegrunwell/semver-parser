@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests;
 
@@ -19,7 +21,7 @@ class VersionTest extends TestCase
     #[Group('Getters')]
     public function casting_to_a_string_should_call_getVersion(): void
     {
-        $version = new Version;
+        $version = new Version();
         $version->setMajorVersion(1);
         $version->setMinorVersion(2);
         $version->setPatchVersion(3);
@@ -31,7 +33,7 @@ class VersionTest extends TestCase
     #[Group('Getters')]
     public function getVersion_should_retrieve_the_collapsed_string(): void
     {
-        $version = new Version;
+        $version = new Version();
         $version->setMajorVersion(1);
         $version->setMinorVersion(2);
         $version->setPatchVersion(3);
@@ -44,7 +46,7 @@ class VersionTest extends TestCase
     #[Ticket('https://github.com/stevegrunwell/semver-parser/issues/1')]
     public function getVersion_should_include_the_prerelease_when_available(): void
     {
-        $version = new Version;
+        $version = new Version();
         $version->setMajorVersion(1);
         $version->setMinorVersion(2);
         $version->setPatchVersion(3);
@@ -85,7 +87,7 @@ class VersionTest extends TestCase
     #[Group('Getters')]
     public function digit_getters_should_default_to_zero(string $getter): void
     {
-        $this->assertSame(0, (new Version)->{$getter}());
+        $this->assertSame(0, (new Version())->{$getter}());
     }
 
     #[Test]
@@ -156,7 +158,7 @@ class VersionTest extends TestCase
     {
         $this->expectException(InvalidVersionException::class);
 
-        (new Version)->{$setter}(-2);
+        (new Version())->{$setter}(-2);
     }
 
     /**
@@ -171,7 +173,7 @@ class VersionTest extends TestCase
     {
         $this->expectException(InvalidVersionException::class);
 
-        (new Version)->setPreReleaseVersion($identifier);
+        (new Version())->setPreReleaseVersion($identifier);
     }
 
     #[Test]
@@ -179,7 +181,7 @@ class VersionTest extends TestCase
     #[Group('Setters')]
     public function digit_values_can_be_incremented(string $getter, string $setter): void
     {
-        $version = new Version;
+        $version = new Version();
         $method  = 'increment' . substr($setter, 3);
         $version->{$setter}(1);
         $version->{$method}();
@@ -222,7 +224,7 @@ class VersionTest extends TestCase
     #[Group('Setters')]
     public function digit_values_can_be_decremented(string $getter, string $setter): void
     {
-        $version = new Version;
+        $version = new Version();
         $method  = 'decrement' . substr($setter, 3);
         $version->{$setter}(2);
         $version->{$method}();
@@ -235,7 +237,7 @@ class VersionTest extends TestCase
     #[Group('Setters')]
     public function digit_values_cannot_be_decremented_below_zero(string $getter, string $setter): void
     {
-        $version = new Version;
+        $version = new Version();
         $method  = 'decrement' . substr($setter, 3);
         $version->{$setter}(0);
 

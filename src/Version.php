@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SteveGrunwell\SemVer;
 
 use SteveGrunwell\SemVer\Exceptions\InvalidVersionException;

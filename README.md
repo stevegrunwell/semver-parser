@@ -12,6 +12,8 @@ Install the library using [Composer](https://getcomposer.org/):
 $ composer require stevegrunwell/semver-parser
 ```
 
+Please note that while this library should be compatible with PHP 7.4 and newer, the unit tests are only run in CI against [actively-supported versions of PHP](https://www.php.net/supported-versions.php).
+
 ## Usage
 
 The constructor of the `Version` class can accept a valid, semantic version based on [the Semantic Versioning 2.0.0 specification](https://semver.org/spec/v2.0.0.html):
