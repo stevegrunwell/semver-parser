@@ -21,9 +21,9 @@
         }
     },
     "require-dev": {
-        "php": "^7.1",
-        "phpstan/phpstan": "^0.11.16",
-        "phpunit/phpunit": "^7.5",
+        "php": "^7.1 || ^8.0",
+        "phpstan/phpstan": "^1.11",
+        "phpunit/phpunit": "^11.3",
         "squizlabs/php_codesniffer": "^3.5"
     },
     "autoload-dev": {
@@ -50,7 +50,7 @@
         "sort-packages": true,
         "optimize-autoloader": true,
         "platform": {
-            "php": "7.3"
+            "php": "8.3"
         }
     },
     "archive": {
