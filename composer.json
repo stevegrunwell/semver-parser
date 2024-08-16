@@ -34,14 +34,8 @@
         }
     },
     "scripts": {
-        "test": [
-            "./vendor/bin/phpunit --testdox --colors=always",
-            "./vendor/bin/phpcs",
-            "vendor/bin/phpstan analyse src tests --level=7"
-        ],
-        "test-coverage": [
-            "phpdbg -qrr -d memory_limit=-1 ./vendor/bin/phpunit --coverage-html=tests/coverage"
-        ]
+        "test": "make test",
+        "test-coverage": "make test-coverage"
     },
     "scripts-descriptions": {
         "test": "Run all tests.",
