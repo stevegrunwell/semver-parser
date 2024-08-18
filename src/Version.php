@@ -32,9 +32,19 @@ class Version
     protected string $preRelease;
 
     /**
+     * @var string Any build metadata.
+     */
+    protected string $buildMetadata;
+
+    /**
      * @var string The original version string that was provided.
      */
     protected string $version;
+
+    /**
+     * Tracks whether or not $version has been parsed.
+     */
+    private bool $parsed = false;
 
     /**
      * Create the version.
@@ -69,6 +79,11 @@ class Version
         // Append the pre-release, if available.
         if ($this->preRelease) {
             $version .= '-' . $this->preRelease;
+        }
+
+        // Append the build metadata, if available.
+        if ($this->buildMetadata) {
+            $version .= '+' . $this->buildMetadata;
         }
 
         return $version;
@@ -107,6 +122,14 @@ class Version
     }
 
     /**
+     * Get the build metadata.
+     */
+    public function getBuildMetadata(): string
+    {
+        return $this->parseVersion()->buildMetadata;
+    }
+
+    /**
      * Set the major version.
      */
     public function setMajorVersion(int $value): self
@@ -136,6 +159,16 @@ class Version
     public function setPreReleaseVersion(string $value): self
     {
         $this->parseVersion()->preRelease = $this->validateIdentifier($value);
+
+        return $this;
+    }
+
+    /**
+     * Set the build metadata.
+     */
+    public function setBuildMetadata(string $value): self
+    {
+        $this->parseVersion()->buildMetadata = $this->validateIdentifier($value);
 
         return $this;
     }
@@ -196,7 +229,7 @@ class Version
     /**
      * Set the given digit.
      *
-     * @throws \SteveGrunwell\SemVer\Exceptions\InvalidVersionException If $value is < 0.
+     * @throws InvalidVersionException If $value is < 0.
      *
      * @param string $digit One of "major", "minor", or "patch".
      * @param int    $value The value of digit.
@@ -213,48 +246,64 @@ class Version
     }
 
     /**
-     * Parse $this->version and populate the $major, $minor, and $patch properties.
+     * Parse $this->version and populate the $major, $minor, $patch, $preRelease, and $buildMeta
+     * properties on the instance.
      */
     protected function parseVersion(): self
     {
-        // If these are all null, we have yet to parse.
-        if (isset($this->major, $this->minor, $this->patch, $this->preRelease)) {
+        // If we've already parsed once, just return.
+        if ($this->parsed) {
             return $this;
         }
 
-        // If we have a pre-release, split that off.
-        $multipleParts = explode('-', $this->version, 2);
-
-        if (2 === count($multipleParts)) {
-            list($version, $strings) = $multipleParts;
-        } else {
-            $version = $this->version;
+        // Before we even look at the format, check for any illegal characters.
+        if (preg_match('/[^A-Za-z0-9-\+\.]/', $this->version)) {
+            throw new InvalidVersionException(sprintf(
+                '"%s" does not appear to be a valid version number.',
+                $this->version
+            ));
         }
 
-        $values = explode('.', $version, 3);
+        // Start by stripping off any build metadata.
+        $parts = explode('+', $this->version, 2);
+        $this->buildMetadata = $parts[1] ?? '';
+
+        // Next, do the same for pre-release versions.
+        $parts = explode('-', $parts[0] ?? '', 2);
+        $this->preRelease = $parts[1] ?? '';
+
+        // Everything left should be the major, minor, and/or patch versions.
+        $values = explode('.', $parts[0] ?? '');
         $values = array_map('intval', $values);
+        [$this->major, $this->minor, $this->patch] = array_pad($values, 3, 0);
 
-        // Ensure we have three entries, map them to major, minor, and patch.
-        list($this->major, $this->minor, $this->patch) = array_pad($values, 3, 0);
-
-        // Handle pre-release versions, if available.
-        $this->preRelease = !empty($strings) ? $this->validateIdentifier($strings) : '';
+        // Finally, mark the version as parsed so we don't need to do it again.
+        $this->parsed = true;
 
         return $this;
     }
 
     /**
-     * Validate permitted characters for pre-release versions.
+     * Validate permitted characters for pre-release versions and build metadata, both of which
+     * have the same constraints.
      *
      * @link https://semver.org/spec/v2.0.0.html#spec-item-9
+     * @link https://semver.org/spec/v2.0.0.html#spec-item-10
      *
-     * @throws \SteveGrunwell\SemVer\Exceptions\InvalidVersionException If any illegal characters
-     *         are found.
+     * @throws InvalidVersionException If any illegal characters are found.
      */
     protected function validateIdentifier(string $identifier): string
     {
         if (preg_match('/[^A-Za-z0-9-\.]/', $identifier)) {
             throw new InvalidVersionException('Identifiers may only contain ASCII alphanumerics, dots, and hyphens.');
+        }
+
+        // Look for any empty identifiers (multiple and/or trailing periods).
+        if (preg_match('/\.[\.$]/', $identifier)) {
+            throw new InvalidVersionException(sprintf(
+                'Idenfiers may not be empty; "%s" appears to contain an extra "."',
+                $identifier
+            ));
         }
 
         return $identifier;

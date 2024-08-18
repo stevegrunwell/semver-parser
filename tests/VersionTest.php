@@ -57,6 +57,44 @@ class VersionTest extends TestCase
 
     #[Test]
     #[Group('Getters')]
+    #[Ticket('https://github.com/stevegrunwell/semver-parser/issues/2')]
+    public function getVersion_should_include_the_build_metadata_when_available(): void
+    {
+        $version = new Version();
+        $version->setMajorVersion(1);
+        $version->setMinorVersion(2);
+        $version->setPatchVersion(3);
+        $version->setBuildMetadata('abc123');
+
+        $this->assertSame('1.2.3+abc123', $version->getVersion());
+    }
+
+    #[Test]
+    #[Group('Getters')]
+    #[Ticket('https://github.com/stevegrunwell/semver-parser/issues/1')]
+    #[Ticket('https://github.com/stevegrunwell/semver-parser/issues/2')]
+    public function getVersion_should_include_the_prerelease_and_build_metadata_when_available(): void
+    {
+        $version = new Version();
+        $version->setMajorVersion(1);
+        $version->setMinorVersion(2);
+        $version->setPatchVersion(3);
+        $version->setPreReleaseVersion('alpha');
+        $version->setBuildMetadata('abc123');
+
+        $this->assertSame('1.2.3-alpha+abc123', $version->getVersion());
+    }
+
+    #[Test]
+    public function getVersion_should_throw_when_unable_to_parse_the_version(): void
+    {
+        $this->expectException(InvalidVersionException::class);
+
+        (new Version('this is not a valid version'))->getVersion();
+    }
+
+    #[Test]
+    #[Group('Getters')]
     public function getMajorVersion_should_return_the_major_version(): void
     {
         $version = new Version('1.2.3');
@@ -98,6 +136,16 @@ class VersionTest extends TestCase
         $version = new Version('1.2.3-alpha');
 
         $this->assertSame('alpha', $version->getPreReleaseVersion());
+    }
+
+    #[Test]
+    #[Group('Getters')]
+    #[Ticket('https://github.com/stevegrunwell/semver-parser/issues/1')]
+    public function getBuildMetadata_should_return_the_build_metadata(): void
+    {
+        $version = new Version('1.2.3+abc123');
+
+        $this->assertSame('abc123', $version->getBuildMetadata());
     }
 
     #[Test]
@@ -176,6 +224,21 @@ class VersionTest extends TestCase
         (new Version())->setPreReleaseVersion($identifier);
     }
 
+    /**
+     * @link https://semver.org/spec/v2.0.0.html#spec-item-9
+     */
+    #[Test]
+    #[TestDox('Pre-release versions may only contain alphanumeric characters, hyphens, and dots')]
+    #[DataProvider('provide_invalid_build_metadata')]
+    #[Group('Setters')]
+    #[Ticket('https://github.com/stevegrunwell/semver-parser/issues/1')]
+    public function build_metadata_should_be_validated(string $identifier): void
+    {
+        $this->expectException(InvalidVersionException::class);
+
+        (new Version())->setBuildMetadata($identifier);
+    }
+
     #[Test]
     #[DataProvider('provide_version_getters_and_setters')]
     #[Group('Setters')]
@@ -208,7 +271,6 @@ class VersionTest extends TestCase
      * @link https://semver.org/spec/v2.0.0.html#spec-item-7
      */
     #[Test]
-    #[DataProvider('provide_version_getters_and_setters')]
     #[Group('Setters')]
     public function incrementMinorVersion_should_reset_patch_versions_to_zero(): void
     {
@@ -266,22 +328,26 @@ class VersionTest extends TestCase
     /**
      * As a control, include examples given in the specification.
      *
-     * @return iterable<array{string, int, int, int, string}>
+     * @return iterable<array{string, int, int, int, string, string}>
      */
     public static function provide_control_versions(): iterable
     {
         return [
             // https://semver.org/spec/v2.0.0.html#spec-item-9
-            ['1.0.0-alpha', 1, 0, 0, 'alpha' ],
-            ['1.0.0-alpha.1', 1, 0, 0, 'alpha.1'],
-            ['1.0.0-0.3.7', 1, 0, 0, '0.3.7'],
-            ['1.0.0-x.7.z.92', 1, 0, 0, 'x.7.z.92'],
+            ['1.0.0-alpha', 1, 0, 0, 'alpha', ''],
+            ['1.0.0-alpha.1', 1, 0, 0, 'alpha.1', ''],
+            ['1.0.0-0.3.7', 1, 0, 0, '0.3.7', ''],
+            ['1.0.0-x.7.z.92', 1, 0, 0, 'x.7.z.92', ''],
+            ['1.0.0-alpha+001', 1, 0, 0, 'alpha', '001'],
+            ['1.0.0+20130313144700', 1, 0, 0, '', '20130313144700'],
+            ['1.0.0-beta+exp.sha.5114f85', 1, 0, 0, 'beta', 'exp.sha.5114f85'],
 
             // If digits are missing, treat them as zeros.
-            ['1.0', 1, 0, 0, ''],
-            ['1', 1, 0, 0, ''],
-            ['1-alpha', 1, 0, 0, 'alpha'],
-            ['1-alpha.1', 1, 0, 0, 'alpha.1']
+            ['1.0', 1, 0, 0, '', ''],
+            ['1', 1, 0, 0, '', ''],
+            ['1-alpha', 1, 0, 0, 'alpha', ''],
+            ['1-alpha.1', 1, 0, 0, 'alpha.1', ''],
+            ['1-alpha.1+abc.123', 1, 0, 0, 'alpha.1', 'abc.123'],
         ];
     }
 
@@ -306,9 +372,20 @@ class VersionTest extends TestCase
      */
     public static function provide_invalid_identifiers(): iterable
     {
-        return [
-            'Whitespace'  => ['alpha v1'],
-            'Underscores' => ['alpha_v1'],
-        ];
+        yield 'Whitespace'  => ['alpha v1'];
+        yield 'Underscores' => ['alpha_v1'];
+        yield 'Empty dots'  => ['alpha..123'];
+    }
+
+    /**
+     * Provide invalid pre-release version identifiers.
+     *
+     * @return iterable<string, array{string}>
+     */
+    public static function provide_invalid_build_metadata(): iterable
+    {
+        yield 'Whitespace'  => ['January 01'];
+        yield 'Underscores' => ['abc_123'];
+        yield 'Empty dots'  => ['abc..123'];
     }
 }
